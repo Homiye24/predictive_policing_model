@@ -1,0 +1,60 @@
+project:
+  name: zone17-predictive-policing
+  random_seed: 42
+
+data:
+  input_path: 'C:\Users\User\Desktop\Research Project\predictive_policing_model\crimedata.xlsx'
+  input_sheet: Crime_Data
+  prepared_path: 'C:\Users\User\Desktop\Research Project\predictive_policing_model\data\processed\cleaned_incidents.csv'
+  quality_report_path: 'C:\Users\User\Desktop\Research Project\predictive_policing_model\data\processed\data_quality_report.json'
+  timezone: Africa/Lagos
+  missing_category_label: unknown
+  columns:
+    incident_id: Case_ID
+    entry_number: Entry_No
+    occurrence_time: Occurrence_Date_Time
+    reporting_time: Report_Date_Time
+    state_command: State_Command
+    area_command: Area_Command
+    division_outpost: Division
+    incident_location: Incident_Location
+    latitude: Latitude
+    longitude: Longitude
+    crime_category: Crime_Category
+    crime_subcategory: Crime_Subcategory
+    severity: Severity
+    incident_summary: Incident_Summary
+    modus_operandi: Modus_Operandi
+    weapon_used: Weapon_Used
+    action_taken: Action_Taken
+    investigation_status: Investigation_Status
+
+experiment:
+  aggregation_windows:
+    - 24h
+    - 3d
+    - 1w
+  primary_aggregation_window: 24h
+  forecast_target: incident_count_by_location_time_category
+  forecast_horizon_intervals: 1
+  lookback_intervals: 12
+  ranking_dimensions:
+    - division_outpost
+    - time_interval
+    - crime_category
+  ranking_value: predicted_incident_count
+  train_fraction: 0.70
+  validation_fraction: 0.15
+  test_fraction: 0.15
+
+model:
+  gat_hidden_units: 64
+  gat_attention_heads: 8
+  gru_hidden_units: 128
+  gru_layers: 2
+  transformer_heads: 8
+  transformer_blocks: 2
+  dropout: 0.3
+  learning_rate: 0.001
+  weight_decay: 0.00001
+  batch_size: 32
