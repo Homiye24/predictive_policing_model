@@ -3,10 +3,10 @@ project:
   random_seed: 42
 
 data:
-  input_path: 'C:\Users\User\Desktop\Research Project\predictive_policing_model\crimedata.xlsx'
+  input_path: 'data/raw/crimedata.xlsx'
   input_sheet: Crime_Data
-  prepared_path: 'C:\Users\User\Desktop\Research Project\predictive_policing_model\data\processed\cleaned_incidents.csv'
-  quality_report_path: 'C:\Users\User\Desktop\Research Project\predictive_policing_model\data\processed\data_quality_report.json'
+  prepared_path: 'data/processed/cleaned_incidents.csv'
+  quality_report_path: 'data/processed/data_quality_report.json'
   timezone: Africa/Lagos
   missing_category_label: unknown
   columns:
@@ -58,3 +58,13 @@ model:
   learning_rate: 0.001
   weight_decay: 0.00001
   batch_size: 32
+
+spatial_graph:
+  bandwidth_sigma_km: 25.0
+  distance_cutoff_km: 50.0
+  bounding_box:
+    min_latitude: 5.5
+    max_latitude: 8.5
+    min_longitude: 4.0
+    max_longitude: 6.5
+
