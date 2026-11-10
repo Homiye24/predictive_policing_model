@@ -87,7 +87,7 @@ A separate binary hotspot-classification target is not required.
 | `src/predictive_policing/data/` | CSV intake, audit, cleaning, time features, chronological splits | Initial pipeline implemented and tested |
 | `docs/data_pipeline.md` | Data preparation contract, outputs, and known limitations | Documented |
 | `src/predictive_policing/enrichment/` | NLP, structured features, fusion | Package boundary created; implementation pending |
-| `src/predictive_policing/spatial_temporal/` | Aggregation, geocoding integration, graph, sequences | Package boundary created; implementation pending |
+| `src/predictive_policing/spatial_temporal/` | Aggregation, geocoding integration, graph, sequences | Done (`graph.py`, `aggregation.py`, `sequences.py`; 28 unit tests passing) |
 | `src/predictive_policing/models/` | Hybrid and baseline models | Package boundary created; implementation pending |
 | `src/predictive_policing/evaluation/` | Metrics, comparisons, ranking outputs | Package boundary created; implementation pending |
 | `src/predictive_policing/explainability/` | SHAP, permutation, attention interpretations | Package boundary created; implementation pending |
@@ -127,10 +127,9 @@ The primary forecast is confirmed as 24 hours ahead; the 3-day and weekly
 resolutions remain exploratory one-step comparisons. No predictive model has
 been implemented.
 
-**Next milestone:** Review repeated incident IDs and timestamp quality with
-the data owner; then implement the interval aggregation and graph-ready
-spatial-temporal representation. The absolute data paths in the configuration
-must be updated if the project moves to another machine.
+**Status:** Stage 1 (Data Ingestion & Cleaning) and Stage 2 (Spatial Graph, Space-Time Grid Discretization, and Look-back Sequence Generator) are completed and verified (44/44 tests passing).
+
+**Next milestone:** Stage 3 (Narrative NLP, Semantic Feature Engineering & Feature Fusion).
 
 ## Progress update convention
 
