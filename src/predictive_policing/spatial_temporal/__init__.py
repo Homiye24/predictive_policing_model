@@ -22,6 +22,16 @@ from predictive_policing.spatial_temporal.graph import (
     haversine_distance,
     normalize_adjacency_symmetric,
 )
+from predictive_policing.spatial_temporal.io import (
+    load_sequence_split,
+    load_spatial_graph,
+    load_spatiotemporal_cube,
+    load_tabular_lag_features,
+    save_sequence_split,
+    save_spatial_graph,
+    save_spatiotemporal_cube,
+    save_tabular_lag_features,
+)
 from predictive_policing.spatial_temporal.sequences import (
     SequenceSplit,
     build_tabular_lag_features,
@@ -53,7 +63,15 @@ __all__ = [
     "generate_lookback_sequences",
     "haversine_distance",
     "inverse_transform_counts",
+    "load_sequence_split",
+    "load_spatial_graph",
+    "load_spatiotemporal_cube",
+    "load_tabular_lag_features",
     "normalize_adjacency_symmetric",
+    "save_sequence_split",
+    "save_spatial_graph",
+    "save_spatiotemporal_cube",
+    "save_tabular_lag_features",
     "split_sequences_chronological",
     "to_torch_dataset",
 ]
