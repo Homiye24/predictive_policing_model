@@ -16,6 +16,8 @@ import pandas as pd
 from pandas.errors import EmptyDataError, ParserError
 
 REQUIRED_FIELDS = ("occurrence_time", "division_outpost", "crime_category")
+
+
 class DataIngestionError(ValueError):
     """Raised when a source file cannot be safely loaded or transformed."""
 
@@ -161,23 +163,15 @@ def transform_incidents(
         raise DataIngestionError("Source uses reserved internal column '_source_row_number'.")
 
     normalized_columns = {
-        field: name.strip()
-        for field, name in columns.items()
-        if isinstance(name, str)
+        field: name.strip() for field, name in columns.items() if isinstance(name, str)
     }
 
-    missing_mappings = [
-        field
-        for field in REQUIRED_FIELDS
-        if not normalized_columns.get(field)
-    ]
+    missing_mappings = [field for field in REQUIRED_FIELDS if not normalized_columns.get(field)]
     if missing_mappings:
         raise DataIngestionError(f"Missing required source column mappings: {missing_mappings}")
 
     invalid_mappings = [
-        field
-        for field, name in columns.items()
-        if not isinstance(name, str) or not name.strip()
+        field for field, name in columns.items() if not isinstance(name, str) or not name.strip()
     ]
     if invalid_mappings:
         raise DataIngestionError(f"Invalid source column mappings: {invalid_mappings}")
@@ -251,9 +245,10 @@ def transform_incidents(
     result[category_column] = result[category_column].fillna(missing_category_label)
     unknown_category_rows = int(result[category_column].eq(missing_category_label).sum())
 
-    if "incident_summary" in normalized_columns and normalized_columns[
-        "incident_summary"
-    ] in result.columns:
+    if (
+        "incident_summary" in normalized_columns
+        and normalized_columns["incident_summary"] in result.columns
+    ):
         result["model_incident_summary"] = _normalize_text(
             result[normalized_columns["incident_summary"]], casefold=False
         )
@@ -336,7 +331,9 @@ def split_chronologically(
     if validation_end_index >= len(unique_times):
         validation_end_index = len(unique_times) - 1
     if train_end_index >= validation_end_index:
-        raise ValueError("Not enough distinct time points for three non-empty chronological splits.")
+        raise ValueError(
+            "Not enough distinct time points for three non-empty chronological splits."
+        )
 
     train_end = unique_times[train_end_index - 1]
     validation_end = unique_times[validation_end_index - 1]
@@ -364,9 +361,7 @@ def prepare_incident_data(
     prepared_resolved = Path(prepared_path).resolve()
     report_resolved = Path(report_path).resolve()
     if len({input_resolved, prepared_resolved, report_resolved}) != 3:
-        raise DataIngestionError(
-            "Input, prepared-data, and quality-report paths must be distinct."
-        )
+        raise DataIngestionError("Input, prepared-data, and quality-report paths must be distinct.")
     source = read_incident_file(input_path, sheet_name=input_sheet)
     transformed, report = transform_incidents(
         source,
@@ -389,9 +384,7 @@ def _parse_timestamps(values: pd.Series, timezone: str) -> pd.Series:
             if pd.isna(timestamp):
                 return pd.NaT
             if timestamp.tzinfo is None:
-                timestamp = timestamp.tz_localize(
-                    timezone, ambiguous="NaT", nonexistent="NaT"
-                )
+                timestamp = timestamp.tz_localize(timezone, ambiguous="NaT", nonexistent="NaT")
             else:
                 timestamp = timestamp.tz_convert(timezone)
             return timestamp.tz_convert("UTC")
@@ -410,9 +403,7 @@ def _normalize_text(values: pd.Series, *, casefold: bool = True) -> pd.Series:
     return normalized
 
 
-def _add_coordinates(
-    frame: pd.DataFrame, columns: Mapping[str, str]
-) -> tuple[int, int]:
+def _add_coordinates(frame: pd.DataFrame, columns: Mapping[str, str]) -> tuple[int, int]:
     latitude_source = columns.get("latitude")
     longitude_source = columns.get("longitude")
     has_latitude = bool(latitude_source and latitude_source in frame.columns)

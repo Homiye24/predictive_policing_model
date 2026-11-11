@@ -112,11 +112,14 @@ def test_generate_lookback_multi_horizon():
 def test_generate_lookback_static_node_features():
     cube = _make_dummy_cube(num_intervals=15, num_divisions=3, num_categories=2)
     # 2 static features per node (e.g. lat, lon)
-    static_feats = np.array([
-        [7.25, 5.20],
-        [7.62, 5.22],
-        [7.30, 5.15],
-    ], dtype=np.float32)
+    static_feats = np.array(
+        [
+            [7.25, 5.20],
+            [7.62, 5.22],
+            [7.30, 5.15],
+        ],
+        dtype=np.float32,
+    )
 
     x, _, _, feature_names = generate_lookback_sequences(
         cube,
@@ -240,7 +243,13 @@ def test_build_tabular_lag_features():
     # At interval index t_idx, spatial_spillover = norm_adj @ total_counts[t_idx - 1]
     # For Station_0, spatial_neighbor_lag_1 should be 0.5 * count_0[t-1] + 0.5 * count_1[t-1]
     row_0 = df[(df["division_outpost"] == "Station_0")].iloc[0]
-    expected_spillover = 0.5 * row_0["lag_1_total"] + 0.5 * df[(df["division_outpost"] == "Station_1") & (df["interval"] == row_0["interval"])]["lag_1_total"].values[0]
+    expected_spillover = (
+        0.5 * row_0["lag_1_total"]
+        + 0.5
+        * df[(df["division_outpost"] == "Station_1") & (df["interval"] == row_0["interval"])][
+            "lag_1_total"
+        ].values[0]
+    )
     np.testing.assert_allclose(row_0["spatial_neighbor_lag_1"], expected_spillover, rtol=1e-5)
 
 
@@ -250,6 +259,7 @@ def test_to_torch_dataset_import_handling():
 
     try:
         import torch  # noqa: F401
+
         dataset = to_torch_dataset(x, y)
         assert len(dataset) == 5
     except ImportError:

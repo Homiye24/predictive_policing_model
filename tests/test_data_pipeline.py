@@ -102,9 +102,7 @@ def test_transformation_preserves_source_and_reports_quality_issues() -> None:
     assert transformed.loc[0, "model_division_outpost"] == "akure north"
     pd.testing.assert_frame_equal(source, source_copy)
     assert transformed.loc[0, "model_incident_summary"] == "Property taken"
-    assert transformed.loc[0, "model_occurred_at"] == pd.Timestamp(
-        "2025-01-01 11:00:00+00:00"
-    )
+    assert transformed.loc[0, "model_occurred_at"] == pd.Timestamp("2025-01-01 11:00:00+00:00")
     assert transformed.loc[0, "model_reporting_delay_hours"] == 1
     assert pd.isna(transformed.loc[2, "model_occurred_at"])
     assert pd.isna(transformed.loc[1, "model_reporting_delay_hours"])

@@ -99,10 +99,7 @@ def haversine_distance(
     delta_phi = np.radians(lat2 - lat1)
     delta_lambda = np.radians(lon2 - lon1)
 
-    a = (
-        np.sin(delta_phi / 2.0) ** 2
-        + np.cos(phi1) * np.cos(phi2) * np.sin(delta_lambda / 2.0) ** 2
-    )
+    a = np.sin(delta_phi / 2.0) ** 2 + np.cos(phi1) * np.cos(phi2) * np.sin(delta_lambda / 2.0) ** 2
     # Clip to avoid floating-point errors outside [0, 1]
     a = np.clip(a, 0.0, 1.0)
     c = 2.0 * np.arctan2(np.sqrt(a), np.sqrt(1.0 - a))
@@ -296,9 +293,7 @@ def build_spatial_graph(
     """End-to-end builder: takes station names and lat/lon coordinates and builds SpatialGraph."""
     num_nodes = len(node_names)
     if coordinates.shape != (num_nodes, 2):
-        raise ValueError(
-            f"Coordinates shape {coordinates.shape} does not match ({num_nodes}, 2)"
-        )
+        raise ValueError(f"Coordinates shape {coordinates.shape} does not match ({num_nodes}, 2)")
 
     distances = compute_pairwise_distances(coordinates)
     raw_adj = build_gaussian_adjacency(
