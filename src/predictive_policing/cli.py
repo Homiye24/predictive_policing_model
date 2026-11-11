@@ -76,12 +76,22 @@ def main() -> int:
 
     # Execute Dashboard
     if arguments.command == "dashboard":
-        from predictive_policing.visualization.dashboard import run_dashboard
+        try:
+            from predictive_policing.visualization.dashboard import run_dashboard
+        except ModuleNotFoundError as exc:
+            print(
+                f"Error: Dashboard dependencies are missing ({exc}).\n"
+                "Please install the visualization extra with:\n"
+                "  uv sync --extra visualization",
+                file=sys.stderr,
+            )
+            return 1
 
         processed_dir = project_root / "data" / "processed"
         print(
             f"Launching Zone 17 Predictive Policing Dashboard on http://{arguments.host}:{arguments.port}"
         )
+
         run_dashboard(
             host=arguments.host,
             port=arguments.port,

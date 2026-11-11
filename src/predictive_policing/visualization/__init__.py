@@ -1,7 +1,12 @@
-from predictive_policing.visualization.dashboard import (
-    create_dashboard,
-    run_dashboard,
-)
+try:
+    from predictive_policing.visualization.dashboard import (
+        create_dashboard,
+        run_dashboard,
+    )
+except ImportError:
+    create_dashboard = None  # type: ignore[assignment]
+    run_dashboard = None  # type: ignore[assignment]
+
 from predictive_policing.visualization.spatial_temporal_plots import (
     generate_all_stage2_figures,
     plot_crime_trends,

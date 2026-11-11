@@ -1,7 +1,14 @@
+import importlib.util
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pytest
+
+HAS_DASHBOARD_DEPS = (
+    importlib.util.find_spec("plotly") is not None
+    and importlib.util.find_spec("nicegui") is not None
+)
 
 from predictive_policing.spatial_temporal.aggregation import (
     SpatiotemporalCube,
@@ -118,6 +125,10 @@ def test_generate_all_stage2_figures(tmp_path: Path):
         assert path.stat().st_size > 5000
 
 
+@pytest.mark.skipif(
+    not HAS_DASHBOARD_DEPS,
+    reason="plotly and nicegui are required for dashboard tests",
+)
 def test_dashboard_plotly_builders():
     from predictive_policing.visualization.dashboard import (
         _create_fallback_demo_data,
