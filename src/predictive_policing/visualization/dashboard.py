@@ -100,20 +100,85 @@ def _create_fallback_demo_data() -> tuple[SpatialGraph, SpatiotemporalCube]:
     return graph, cube
 
 
-def build_plotly_spatial_map(graph: SpatialGraph) -> go.Figure:
-    """Build an interactive geographic network map of Police Zone 17 stations."""
+def build_plotly_spatial_map(
+    graph: SpatialGraph,
+    map_style: str = "osm",
+) -> go.Figure:
+    """Build an interactive geographic network map of Police Zone 17 stations.
+
+    Args:
+        graph: SpatialGraph instance.
+        map_style: "osm" for real OpenStreetMap tiles, or "schematic" for Cartesian coordinate grid.
+    """
     lats = graph.centroids[:, 0]
     lons = graph.centroids[:, 1]
     names = graph.node_names
 
-    fig = go.Figure()
-
-    # Draw Gaussian adjacency connection edges
     edge_index = graph.edge_index
     edge_weights = graph.edge_weights
 
+    hover_texts = [
+        f"<b>{name} Division</b><br>Lat: {lats[i]:.4f}°N<br>Lon: {lons[i]:.4f}°E"
+        for i, name in enumerate(names)
+    ]
+
+    fig = go.Figure()
+
+    if map_style == "osm" and hasattr(go, "Scattermap"):
+        # Real OpenStreetMap MapLibre rendering
+        if edge_index.shape[1] > 0 and edge_weights.size > 0:
+            edge_lats: list[float | None] = []
+            edge_lons: list[float | None] = []
+            for idx in range(edge_index.shape[1]):
+                src = int(edge_index[0, idx])
+                dst = int(edge_index[1, idx])
+                if src < dst:
+                    edge_lats.extend([float(lats[src]), float(lats[dst]), None])
+                    edge_lons.extend([float(lons[src]), float(lons[dst]), None])
+
+            fig.add_trace(
+                go.Scattermap(
+                    lat=edge_lats,
+                    lon=edge_lons,
+                    mode="lines",
+                    line={"width": 3, "color": "rgba(37, 99, 235, 0.7)"},
+                    hoverinfo="none",
+                    name="Spatial Highway Links",
+                )
+            )
+
+        fig.add_trace(
+            go.Scattermap(
+                lat=lats,
+                lon=lons,
+                mode="markers+text",
+                text=names,
+                textposition="top right",
+                hovertext=hover_texts,
+                hoverinfo="text",
+                marker={
+                    "size": 16,
+                    "color": "#dc2626",
+                },
+                name="Police Stations",
+            )
+        )
+
+        center_lat = float(np.mean(lats)) if len(lats) > 0 else 7.3
+        center_lon = float(np.mean(lons)) if len(lons) > 0 else 5.3
+
+        fig.update_layout(
+            title="<b>Zone 17 Police Division Spatial Network (OpenStreetMap Overlay)</b>",
+            map_style="open-street-map",
+            map_zoom=8.0,
+            map_center={"lat": center_lat, "lon": center_lon},
+            margin={"l": 20, "r": 20, "t": 50, "b": 20},
+            height=580,
+        )
+        return fig
+
+    # Fallback / Schematic Cartesian Coordinate View
     if edge_index.shape[1] > 0 and edge_weights.size > 0:
-        float(np.max(edge_weights)) if np.max(edge_weights) > 0 else 1.0
         edge_x: list[float | None] = []
         edge_y: list[float | None] = []
 
@@ -135,12 +200,6 @@ def build_plotly_spatial_map(graph: SpatialGraph) -> go.Figure:
             )
         )
 
-    # Draw police division station markers
-    hover_texts = [
-        f"<b>{name} Division</b><br>Lat: {lats[i]:.4f}°N<br>Lon: {lons[i]:.4f}°E"
-        for i, name in enumerate(names)
-    ]
-
     fig.add_trace(
         go.Scatter(
             x=lons,
@@ -161,7 +220,7 @@ def build_plotly_spatial_map(graph: SpatialGraph) -> go.Figure:
     )
 
     fig.update_layout(
-        title="<b>Zone 17 Police Division Spatial Network (Ondo & Ekiti)</b>",
+        title="<b>Zone 17 Police Division Spatial Network (Schematic Grid)</b>",
         xaxis_title="Longitude (°E)",
         yaxis_title="Latitude (°N)",
         margin={"l": 40, "r": 40, "t": 50, "b": 40},
@@ -173,6 +232,7 @@ def build_plotly_spatial_map(graph: SpatialGraph) -> go.Figure:
     fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor="#e2e8f0")
 
     return fig
+
 
 
 def build_plotly_cube_heatmap(
@@ -317,9 +377,26 @@ def create_dashboard(
         # TAB 1: Map
         with ui.tab_panel(tab_map):
             ui.markdown("### Interactive Spatial Division Network (Gaussian Edge Weights)")
-            ui.markdown("Nearby divisions are connected by highway links with distance decay $\\sigma=25$ km.")
-            map_fig = build_plotly_spatial_map(graph)
-            ui.plotly(map_fig).classes("w-full")
+            ui.markdown(
+                "Nearby divisions are connected by highway links with distance decay "
+                "(**σ = 25 km**, **cutoff = 50 km**). Equations 3.8 & 3.9."
+            )
+            with ui.row().classes("items-center gap-4 mb-3"):
+                map_toggle = ui.toggle(
+                    {"osm": "OpenStreetMap Real Tiles", "schematic": "Cartesian Coordinate Grid"},
+                    value="osm",
+                ).classes("text-sm shadow-sm")
+
+            map_container = ui.column().classes("w-full")
+
+            def refresh_map():
+                map_container.clear()
+                with map_container:
+                    m_fig = build_plotly_spatial_map(graph, map_style=map_toggle.value)
+                    ui.plotly(m_fig).classes("w-full")
+
+            map_toggle.on("update:model-value", lambda _: refresh_map())
+            refresh_map()
 
         # TAB 2: Cube Heatmap
         with ui.tab_panel(tab_cube):
@@ -372,10 +449,11 @@ def create_dashboard(
 
             with ui.card().classes("p-4 bg-slate-50 border border-slate-200 mt-2"):
                 ui.markdown(
-                    "- **Input History $\\mathbf{X}$**: Shape `[12 × N × D]` (Counts + Cyclical Calendar Features)\n"
-                    "- **Target Forecast $\\mathbf{Y}$**: Shape `[N × C]` (Predicted Incidents for Day `t+1`)\n"
+                    "- **Input History (X)**: Shape `[12 × N × D]` (Counts + Cyclical Calendar Features)\n"
+                    "- **Target Forecast (Y)**: Shape `[N × C]` (Predicted Incidents for Day `t+1`)\n"
                     "- **Chronological Split**: 70% Train, 15% Validation, 15% Test strictly by target date."
                 )
+
 
 
 def run_dashboard(

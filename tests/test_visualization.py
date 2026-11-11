@@ -129,9 +129,14 @@ def test_dashboard_plotly_builders():
     assert cube.num_intervals == 90
     assert cube.num_categories == 5
 
-    map_fig = build_plotly_spatial_map(graph)
-    assert map_fig is not None
-    assert len(map_fig.data) >= 1
+    map_fig_osm = build_plotly_spatial_map(graph, map_style="osm")
+    assert map_fig_osm is not None
+    assert len(map_fig_osm.data) >= 1
+
+    map_fig_schematic = build_plotly_spatial_map(graph, map_style="schematic")
+    assert map_fig_schematic is not None
+    assert len(map_fig_schematic.data) >= 1
+
 
     heatmap_fig = build_plotly_cube_heatmap(cube)
     assert heatmap_fig is not None
