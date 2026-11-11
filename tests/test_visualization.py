@@ -96,7 +96,9 @@ def test_plot_temporal_crime_distribution(tmp_path: Path):
 
 def test_plot_lookback_window_diagram(tmp_path: Path):
     out_file = tmp_path / "diagram.png"
-    fig = plot_lookback_window_diagram(output_path=out_file, lookback_intervals=12, forecast_horizon=1, dpi=100)
+    fig = plot_lookback_window_diagram(
+        output_path=out_file, lookback_intervals=12, forecast_horizon=1, dpi=100
+    )
 
     assert fig is not None
     assert out_file.exists()
@@ -137,7 +139,6 @@ def test_dashboard_plotly_builders():
     assert map_fig_schematic is not None
     assert len(map_fig_schematic.data) >= 1
 
-
     heatmap_fig = build_plotly_cube_heatmap(cube)
     assert heatmap_fig is not None
     assert len(heatmap_fig.data) == 1
@@ -148,4 +149,3 @@ def test_dashboard_plotly_builders():
     trends_fig = build_plotly_crime_trends(cube)
     assert trends_fig is not None
     assert len(trends_fig.data) == 5
-

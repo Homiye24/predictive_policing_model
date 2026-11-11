@@ -89,7 +89,6 @@ def main() -> int:
         )
         return 0
 
-
     # Execute Stage 1
     if arguments.command == "data-prepare":
         data_config = config["data"]
@@ -279,7 +278,9 @@ def main() -> int:
             for k, p in fig_results.items():
                 print(f"          - {k}: {p.name}")
 
-        print("\nStage 2 execution completed successfully. Data handoff files are ready for Stage 3 & 4.")
+        print(
+            "\nStage 2 execution completed successfully. Data handoff files are ready for Stage 3 & 4."
+        )
         return 0
 
     experiment = config["experiment"]

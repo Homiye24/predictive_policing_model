@@ -21,4 +21,3 @@ __all__ = [
     "plot_temporal_crime_distribution",
     "run_dashboard",
 ]
-

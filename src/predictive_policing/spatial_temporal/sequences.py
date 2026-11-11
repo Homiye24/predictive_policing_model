@@ -86,8 +86,12 @@ class SequenceSplit:
             "num_categories": self.n_categories,
             "num_feature_channels": self.n_features,
             "transform_counts": str(self.transform_counts),
-            "train_start": str(self.train_target_intervals[0]) if self.train_target_intervals else "",
-            "train_end": str(self.train_target_intervals[-1]) if self.train_target_intervals else "",
+            "train_start": str(self.train_target_intervals[0])
+            if self.train_target_intervals
+            else "",
+            "train_end": str(self.train_target_intervals[-1])
+            if self.train_target_intervals
+            else "",
             "val_start": str(self.val_target_intervals[0]) if self.val_target_intervals else "",
             "val_end": str(self.val_target_intervals[-1]) if self.val_target_intervals else "",
             "test_start": str(self.test_target_intervals[0]) if self.test_target_intervals else "",
@@ -95,9 +99,7 @@ class SequenceSplit:
         }
 
 
-def inverse_transform_counts(
-    counts: np.ndarray, transform: str | None = "log1p"
-) -> np.ndarray:
+def inverse_transform_counts(counts: np.ndarray, transform: str | None = "log1p") -> np.ndarray:
     """Invert transformed count predictions back to original incident scale.
 
     Args:
@@ -366,9 +368,7 @@ def build_tabular_lag_features(
     records: list[dict[str, object]] = []
 
     # Pre-extract temporal features as dictionary for fast lookup
-    temp_dict = {
-        ts: cube.temporal_features[i] for i, ts in enumerate(cube.intervals)
-    }
+    temp_dict = {ts: cube.temporal_features[i] for i, ts in enumerate(cube.intervals)}
 
     # Pre-extract normalized adjacency if spatial lag requested
     norm_adj = None

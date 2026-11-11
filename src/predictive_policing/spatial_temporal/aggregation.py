@@ -128,9 +128,7 @@ def floor_to_interval(
         - '1w': Calendar week starting Monday 00:00:00 in local timezone.
     """
     if window not in ALLOWED_WINDOWS:
-        raise ValueError(
-            f"Invalid aggregation window '{window}'. Allowed: {ALLOWED_WINDOWS}"
-        )
+        raise ValueError(f"Invalid aggregation window '{window}'. Allowed: {ALLOWED_WINDOWS}")
 
     # Convert to localized pandas datetime
     ts = pd.to_datetime(timestamps, errors="coerce")
@@ -178,9 +176,7 @@ def generate_continuous_interval_range(
 ) -> list[pd.Timestamp]:
     """Generate an unbroken, sequential list of regular intervals from start to end."""
     if window not in ALLOWED_WINDOWS:
-        raise ValueError(
-            f"Invalid aggregation window '{window}'. Allowed: {ALLOWED_WINDOWS}"
-        )
+        raise ValueError(f"Invalid aggregation window '{window}'. Allowed: {ALLOWED_WINDOWS}")
 
     start = (
         start_interval.tz_convert(timezone).normalize()
@@ -333,9 +329,7 @@ def build_spatiotemporal_cube(
             working_df.loc[unrecognized_mask, category_col] = unknown_category_label
 
     # Compute interval bucket for each incident
-    interval_series = floor_to_interval(
-        working_df[time_col], window=window, timezone=timezone
-    )
+    interval_series = floor_to_interval(working_df[time_col], window=window, timezone=timezone)
     working_df["_interval"] = interval_series
 
     # Determine full unbroken interval range

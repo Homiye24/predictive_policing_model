@@ -57,7 +57,9 @@ def validate_config(config: dict[str, Any]) -> None:
             "and crime_category to source column names."
         )
     if any(not isinstance(name, str) or not name.strip() for name in columns.values()):
-        raise ConfigurationError("Every 'data.columns' value must be a non-empty source column name.")
+        raise ConfigurationError(
+            "Every 'data.columns' value must be a non-empty source column name."
+        )
 
     experiment = config.get("experiment")
     if not isinstance(experiment, dict):
@@ -65,8 +67,7 @@ def validate_config(config: dict[str, Any]) -> None:
 
     if experiment.get("forecast_target") != "incident_count_by_location_time_category":
         raise ConfigurationError(
-            "'experiment.forecast_target' must be "
-            "'incident_count_by_location_time_category'."
+            "'experiment.forecast_target' must be 'incident_count_by_location_time_category'."
         )
 
     aggregation_windows = experiment.get("aggregation_windows")
@@ -101,10 +102,14 @@ def validate_config(config: dict[str, Any]) -> None:
         experiment.get("test_fraction"),
     ]
     if any(not isinstance(value, (int, float)) or value <= 0 or value >= 1 for value in fractions):
-        raise ConfigurationError("Train, validation, and test fractions must each be between 0 and 1.")
+        raise ConfigurationError(
+            "Train, validation, and test fractions must each be between 0 and 1."
+        )
     if abs(sum(fractions) - 1.0) > 1e-9:
         raise ConfigurationError("Train, validation, and test fractions must sum to 1.")
 
     horizon = experiment.get("forecast_horizon_intervals")
     if isinstance(horizon, bool) or not isinstance(horizon, int) or horizon < 1:
-        raise ConfigurationError("'experiment.forecast_horizon_intervals' must be a positive integer.")
+        raise ConfigurationError(
+            "'experiment.forecast_horizon_intervals' must be a positive integer."
+        )

@@ -93,7 +93,13 @@ def plot_spatial_graph(
             fontsize=8.5,
             fontweight="semibold",
             color="#1a202c",
-            bbox={"boxstyle": "round,pad=0.25", "fc": "#ffffff", "ec": "#cbd5e0", "alpha": 0.85, "lw": 0.6},
+            bbox={
+                "boxstyle": "round,pad=0.25",
+                "fc": "#ffffff",
+                "ec": "#cbd5e0",
+                "alpha": 0.85,
+                "lw": 0.6,
+            },
             zorder=4,
         )
 

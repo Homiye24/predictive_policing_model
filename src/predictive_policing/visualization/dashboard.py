@@ -30,21 +30,30 @@ from predictive_policing.spatial_temporal.io import (
 def _create_fallback_demo_data() -> tuple[SpatialGraph, SpatiotemporalCube]:
     """Create a realistic Zone 17 demo graph and cube if processed files are not on disk."""
     divisions = [
-        "Okuta Elerinla", "Akure North", "Owo", "Ado Central",
-        "Ikole", "Idanre", "Ondo Town", "Ikere"
+        "Okuta Elerinla",
+        "Akure North",
+        "Owo",
+        "Ado Central",
+        "Ikole",
+        "Idanre",
+        "Ondo Town",
+        "Ikere",
     ]
     categories = ["Theft", "Burglary", "Assault", "Armed Robbery", "Homicide"]
 
-    coords = np.array([
-        [7.25, 5.19],  # Okuta Elerinla
-        [7.32, 5.25],  # Akure North
-        [7.19, 5.58],  # Owo
-        [7.62, 5.22],  # Ado Central
-        [7.79, 5.51],  # Ikole
-        [7.11, 5.11],  # Idanre
-        [7.09, 4.84],  # Ondo Town
-        [7.50, 5.23],  # Ikere
-    ], dtype=np.float32)
+    coords = np.array(
+        [
+            [7.25, 5.19],  # Okuta Elerinla
+            [7.32, 5.25],  # Akure North
+            [7.19, 5.58],  # Owo
+            [7.62, 5.22],  # Ado Central
+            [7.79, 5.51],  # Ikole
+            [7.11, 5.11],  # Idanre
+            [7.09, 4.84],  # Ondo Town
+            [7.50, 5.23],  # Ikere
+        ],
+        dtype=np.float32,
+    )
 
     n = len(divisions)
     # Pairwise distances
@@ -54,6 +63,7 @@ def _create_fallback_demo_data() -> tuple[SpatialGraph, SpatiotemporalCube]:
         dense_to_edge_list,
         normalize_adjacency_symmetric,
     )
+
     dist = compute_pairwise_distances(coords)
     raw_adj = build_gaussian_adjacency(dist, bandwidth_sigma=25.0, distance_cutoff=50.0)
     norm_adj = normalize_adjacency_symmetric(raw_adj)
@@ -234,7 +244,6 @@ def build_plotly_spatial_map(
     return fig
 
 
-
 def build_plotly_cube_heatmap(
     cube: SpatiotemporalCube, category: str = "All Categories", colorscale: str = "YlOrRd"
 ) -> go.Figure:
@@ -339,12 +348,16 @@ def create_dashboard(
     )
 
     # Header Bar
-    with ui.header().classes("bg-blue-900 text-white flex justify-between items-center px-6 py-3 shadow-md"):
+    with ui.header().classes(
+        "bg-blue-900 text-white flex justify-between items-center px-6 py-3 shadow-md"
+    ):
         with ui.row().classes("items-center gap-3"):
             ui.icon("shield", size="32px").classes("text-yellow-400")
             with ui.column().classes("gap-0"):
                 ui.label("Police Zone 17 Predictive Policing").classes("text-xl font-bold")
-                ui.label("Ondo & Ekiti State Commands | Spatial-Temporal Decision Support").classes("text-xs text-blue-200")
+                ui.label("Ondo & Ekiti State Commands | Spatial-Temporal Decision Support").classes(
+                    "text-xs text-blue-200"
+                )
         with ui.row().classes("items-center gap-2"):
             if using_demo:
                 ui.badge("DEMO PREVIEW", color="amber").classes("text-black font-bold")
@@ -357,11 +370,15 @@ def create_dashboard(
             ui.label("Total Incidents").classes("text-xs uppercase text-slate-500 font-semibold")
             ui.label(f"{cube.total_incidents:,}").classes("text-2xl font-bold text-slate-800")
         with ui.card().classes("flex-1 bg-slate-50 border-l-4 border-indigo-600 shadow-sm p-4"):
-            ui.label("Active Divisions (Nodes)").classes("text-xs uppercase text-slate-500 font-semibold")
+            ui.label("Active Divisions (Nodes)").classes(
+                "text-xs uppercase text-slate-500 font-semibold"
+            )
             ui.label(f"{graph.num_nodes}").classes("text-2xl font-bold text-slate-800")
         with ui.card().classes("flex-1 bg-slate-50 border-l-4 border-green-600 shadow-sm p-4"):
             ui.label("Aggregation Window").classes("text-xs uppercase text-slate-500 font-semibold")
-            ui.label(f"{cube.window.upper()} (Tactical Daily)").classes("text-2xl font-bold text-slate-800")
+            ui.label(f"{cube.window.upper()} (Tactical Daily)").classes(
+                "text-2xl font-bold text-slate-800"
+            )
         with ui.card().classes("flex-1 bg-slate-50 border-l-4 border-amber-600 shadow-sm p-4"):
             ui.label("Natural Sparsity").classes("text-xs uppercase text-slate-500 font-semibold")
             ui.label(f"{cube.sparsity:.1%}").classes("text-2xl font-bold text-slate-800")
@@ -405,15 +422,21 @@ def create_dashboard(
 
             with ui.row().classes("items-center gap-4 mb-2"):
                 cat_options = ["All Categories"] + list(cube.categories)
-                cat_select = ui.select(cat_options, value="All Categories", label="Crime Category").classes("w-64")
-                color_select = ui.select(["YlOrRd", "Viridis", "Hot", "Blues"], value="YlOrRd", label="Color Scale").classes("w-44")
+                cat_select = ui.select(
+                    cat_options, value="All Categories", label="Crime Category"
+                ).classes("w-64")
+                color_select = ui.select(
+                    ["YlOrRd", "Viridis", "Hot", "Blues"], value="YlOrRd", label="Color Scale"
+                ).classes("w-44")
 
             heatmap_container = ui.column().classes("w-full")
 
             def refresh_heatmap():
                 heatmap_container.clear()
                 with heatmap_container:
-                    h_fig = build_plotly_cube_heatmap(cube, category=cat_select.value, colorscale=color_select.value)
+                    h_fig = build_plotly_cube_heatmap(
+                        cube, category=cat_select.value, colorscale=color_select.value
+                    )
                     ui.plotly(h_fig).classes("w-full")
 
             cat_select.on("update:model-value", lambda _: refresh_heatmap())
@@ -442,10 +465,12 @@ def create_dashboard(
                 slider_label.text = (
                     f"Selected Target Interval (t): Day {val} "
                     f"({cube.intervals[val].strftime('%Y-%m-%d')}) | "
-                    f"Conditioned on Past 12 Days (Day {val-12} to Day {val-1})"
+                    f"Conditioned on Past 12 Days (Day {val - 12} to Day {val - 1})"
                 )
 
-            ui.slider(min=12, max=t_total - 1, value=12, step=1, on_change=on_slider_change).classes("w-full max-w-xl")
+            ui.slider(
+                min=12, max=t_total - 1, value=12, step=1, on_change=on_slider_change
+            ).classes("w-full max-w-xl")
 
             with ui.card().classes("p-4 bg-slate-50 border border-slate-200 mt-2"):
                 ui.markdown(
@@ -453,7 +478,6 @@ def create_dashboard(
                     "- **Target Forecast (Y)**: Shape `[N × C]` (Predicted Incidents for Day `t+1`)\n"
                     "- **Chronological Split**: 70% Train, 15% Validation, 15% Test strictly by target date."
                 )
-
 
 
 def run_dashboard(
@@ -472,4 +496,3 @@ def run_dashboard(
 
 if __name__ in {"__main__", "__mp_main__"}:
     run_dashboard()
-

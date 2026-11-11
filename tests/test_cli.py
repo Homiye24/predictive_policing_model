@@ -111,7 +111,9 @@ def test_cli_spatial_temporal_end_to_end(tmp_path: Path, monkeypatch: pytest.Mon
     assert (figures_dir / "lookback_window_diagram.png").exists()
 
 
-def test_cli_spatial_temporal_missing_prepared_data(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+def test_cli_spatial_temporal_missing_prepared_data(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
     config_dir = tmp_path / "configs"
     config_dir.mkdir(parents=True)
     config_path = config_dir / "bad_config.yaml"

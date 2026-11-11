@@ -72,7 +72,9 @@ def save_spatial_graph(
     return {"graph_npz": npz_path, "centroids_csv": csv_path}
 
 
-def load_spatial_graph(input_path_or_dir: Path, filename_prefix: str = "spatial_graph") -> SpatialGraph:
+def load_spatial_graph(
+    input_path_or_dir: Path, filename_prefix: str = "spatial_graph"
+) -> SpatialGraph:
     """Load and reconstruct a SpatialGraph from disk.
 
     Args:
@@ -229,7 +231,9 @@ def save_sequence_split(
         categories=np.array(split.categories, dtype=object),
         lookback_intervals=np.int32(split.lookback_intervals),
         forecast_horizon=np.int32(split.forecast_horizon),
-        transform_counts=np.array(split.transform_counts if split.transform_counts is not None else ""),
+        transform_counts=np.array(
+            split.transform_counts if split.transform_counts is not None else ""
+        ),
     )
 
     return {"sequences_npz": npz_path}
