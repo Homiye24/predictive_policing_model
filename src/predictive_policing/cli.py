@@ -40,6 +40,30 @@ def main() -> int:
         help="DPI resolution for exported figures (default 300).",
     )
 
+    # 4. Interactive Dashboard
+    dash_parser = subparsers.add_parser(
+        "dashboard",
+        help="Launch the interactive NiceGUI decision-support dashboard.",
+    )
+    dash_parser.add_argument(
+        "--config",
+        type=Path,
+        default=Path("configs/default.yaml"),
+        help="Config file path (default configs/default.yaml).",
+    )
+    dash_parser.add_argument(
+        "--port",
+        type=int,
+        default=8080,
+        help="Port to serve dashboard on (default 8080).",
+    )
+    dash_parser.add_argument(
+        "--host",
+        type=str,
+        default="0.0.0.0",
+        help="Host interface (default 0.0.0.0).",
+    )
+
     arguments = parser.parse_args()
 
     try:
@@ -49,6 +73,16 @@ def main() -> int:
         return 2
 
     project_root = arguments.config.resolve().parent.parent
+
+    # Execute Dashboard
+    if arguments.command == "dashboard":
+        from predictive_policing.visualization.dashboard import run_dashboard
+
+        print(
+            f"Launching Zone 17 Predictive Policing Dashboard on http://{arguments.host}:{arguments.port}"
+        )
+        run_dashboard(host=arguments.host, port=arguments.port)
+        return 0
 
     # Execute Stage 1
     if arguments.command == "data-prepare":

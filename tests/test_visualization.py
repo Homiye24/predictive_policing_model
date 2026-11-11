@@ -114,3 +114,33 @@ def test_generate_all_stage2_figures(tmp_path: Path):
     for path in result.values():
         assert path.exists()
         assert path.stat().st_size > 5000
+
+
+def test_dashboard_plotly_builders():
+    from predictive_policing.visualization.dashboard import (
+        _create_fallback_demo_data,
+        build_plotly_crime_trends,
+        build_plotly_cube_heatmap,
+        build_plotly_spatial_map,
+    )
+
+    graph, cube = _create_fallback_demo_data()
+    assert graph.num_nodes == 8
+    assert cube.num_intervals == 90
+    assert cube.num_categories == 5
+
+    map_fig = build_plotly_spatial_map(graph)
+    assert map_fig is not None
+    assert len(map_fig.data) >= 1
+
+    heatmap_fig = build_plotly_cube_heatmap(cube)
+    assert heatmap_fig is not None
+    assert len(heatmap_fig.data) == 1
+
+    cat_heatmap_fig = build_plotly_cube_heatmap(cube, category="Theft")
+    assert cat_heatmap_fig is not None
+
+    trends_fig = build_plotly_crime_trends(cube)
+    assert trends_fig is not None
+    assert len(trends_fig.data) == 5
+
