@@ -378,11 +378,20 @@ def create_dashboard(
                 )
 
 
-def run_dashboard(host: str = "0.0.0.0", port: int = 8080, title: str = "Zone 17 Predictive Policing Dashboard"):
-    """Run the NiceGUI event loop."""
-    create_dashboard()
-    ui.run(host=host, port=port, title=title, reload=False, show=False)
+def run_dashboard(
+    host: str = "0.0.0.0",
+    port: int = 8080,
+    title: str = "Zone 17 Predictive Policing Dashboard",
+    data_dir: Path | str = "data/processed",
+):
+    """Run the NiceGUI event loop with create_dashboard bound as the root page."""
+
+    def root_page():
+        create_dashboard(data_dir=data_dir)
+
+    ui.run(root=root_page, host=host, port=port, title=title, reload=False, show=False)
 
 
 if __name__ in {"__main__", "__mp_main__"}:
     run_dashboard()
+

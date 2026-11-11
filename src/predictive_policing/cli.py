@@ -78,11 +78,17 @@ def main() -> int:
     if arguments.command == "dashboard":
         from predictive_policing.visualization.dashboard import run_dashboard
 
+        processed_dir = project_root / "data" / "processed"
         print(
             f"Launching Zone 17 Predictive Policing Dashboard on http://{arguments.host}:{arguments.port}"
         )
-        run_dashboard(host=arguments.host, port=arguments.port)
+        run_dashboard(
+            host=arguments.host,
+            port=arguments.port,
+            data_dir=processed_dir,
+        )
         return 0
+
 
     # Execute Stage 1
     if arguments.command == "data-prepare":
